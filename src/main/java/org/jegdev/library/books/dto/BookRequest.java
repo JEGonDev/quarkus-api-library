@@ -14,6 +14,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Schema(name = "BookRequest", description = "Se utilizara para enviar la informacion necesaria para la creacion de un libro")
 public class BookRequest {
 
+    // Identificador del libro, se genera automaticamente desde MongoDB
+
     @Schema(description = "Titulo del libro", example = "El Principito")
     @NotBlank(message = "El titulo del libro no puede estar vacio.")
     private String title;
