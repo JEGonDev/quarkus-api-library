@@ -20,7 +20,7 @@ public class BookPersistenceMapper {
      */
     public Book toDomain(BookEntity entity) {
         return Book.builder()
-                .id(entity.getId().toHexString())
+                .id(entity.id != null ? entity.id.toHexString() : null)
                 .title(entity.getTitle())
                 .author(entity.getAuthor())
                 .isbn(entity.getIsbn())
@@ -36,13 +36,20 @@ public class BookPersistenceMapper {
      * @return entidad preparada para guardar en base de datos
      */
     public BookEntity toEntity(Book book) {
-        return BookEntity.builder()
-                .id(book.getId() != null ? new ObjectId(book.getId()) : null)
+        // Primer paso contruir la entidad con todos los campos salvo el id
+        BookEntity entity = BookEntity.builder()
                 .title(book.getTitle())
                 .author(book.getAuthor())
                 .isbn(book.getIsbn())
                 .stock(book.getStock())
                 .createdAt(book.getCreatedAt())
                 .build();
+
+        // Segundo paso , si el dominio trae un id , se asigna directamente al campo publico heredado
+        if (book.getId() != null) {
+            entity.id = new ObjectId(book.getId());
+        }
+
+        return entity;
     }
 }
