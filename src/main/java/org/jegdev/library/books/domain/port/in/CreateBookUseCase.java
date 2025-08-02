@@ -1,8 +1,8 @@
 package org.jegdev.library.books.domain.port.in;
 
 import io.smallrye.mutiny.Uni;
-import org.jegdev.library.books.dto.BookRequest;
-import org.jegdev.library.books.dto.BookResponse;
+import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookRequest;
+import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookResponse;
 
 /**
  * Puerto de entrada para crear un libro.

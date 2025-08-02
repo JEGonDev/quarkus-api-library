@@ -1,4 +1,4 @@
-package org.jegdev.library.books.dto;
+package org.jegdev.library.books.infrastructure.adapter.in.rest.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

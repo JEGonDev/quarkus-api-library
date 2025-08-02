@@ -2,8 +2,8 @@ package org.jegdev.library.books.infrastructure.adapter.in.rest.mapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jegdev.library.books.domain.model.Book;
-import org.jegdev.library.books.dto.BookRequest;
-import org.jegdev.library.books.dto.BookResponse;
+import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookRequest;
+import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookResponse;
 
 /**
  * Mapper encargado de convertir entre objetos DTO (entrada/salida)

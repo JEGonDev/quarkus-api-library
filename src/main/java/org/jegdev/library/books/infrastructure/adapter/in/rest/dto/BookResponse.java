@@ -1,4 +1,4 @@
-package org.jegdev.library.books.dto;
+package org.jegdev.library.books.infrastructure.adapter.in.rest.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
