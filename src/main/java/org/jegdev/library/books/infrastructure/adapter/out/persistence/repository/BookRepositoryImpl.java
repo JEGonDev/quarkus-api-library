@@ -2,7 +2,6 @@ package org.jegdev.library.books.infrastructure.adapter.out.persistence.reposito
 
 
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
-import io.quarkus.mongodb.reactive.ReactiveMongoDatabase;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
