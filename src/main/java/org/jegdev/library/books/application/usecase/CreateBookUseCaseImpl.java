@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import org.jegdev.library.books.domain.model.Book;
 import org.jegdev.library.books.domain.port.in.CreateBookUseCase;
 import org.jegdev.library.books.domain.port.out.BookRepository;
+import org.jegdev.library.books.errors.exceptions.personalized.BookDuplicateException;
 import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookRequest;
 import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookResponse;
 import org.jegdev.library.books.infrastructure.adapter.in.rest.mapper.BookDtoMapper;
@@ -15,9 +16,12 @@ import java.time.Instant;
 
 /**
  * Implementación del caso de uso para crear libros.
- * Actúa como un servicio de aplicación que coordina la lógica entre la capa de presentación y dominio.
+ * Esta clase maneja el flujo reactivo completo para la creación de libros,
+ * incluyendo validaciones y persistencia.
+ *
+ * @ApplicationScoped garantiza una única instancia para toda la aplicación
  */
-@ApplicationScoped // Crea una unica instancia de esta clase durante todo el ciclo de vida de la app
+@ApplicationScoped
 public class CreateBookUseCaseImpl implements CreateBookUseCase {
 
     // Dependencias requeridas marcadas como final para garantizar inmutabilidad
@@ -36,19 +40,63 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
     }
 
     /**
-     * Implementa la lógica del caso de uso para crear un nuevo libro.
+     * Método principal que orquesta el flujo de creación de un libro.
+     * El flujo sigue estos pasos:
+     * 1. Valida que no exista un libro con el mismo ISBN
+     * 2. Crea una entidad de dominio Book a partir del DTO
+     * 3. Persiste el libro en la base de datos
+     * 4. Convierte y retorna la respuesta
      *
-     * @param bookRequest DTO con los datos del libro a crear
-     * @return Uni<BookResponse> respuesta reactiva con el libro creado
+     * @param bookRequest DTO con los datos del libro a crear (ya validado por Bean Validation)
+     * @return Uni<BookResponse> Respuesta reactiva con el libro creado
+     * @throws BookDuplicateException si ya existe un libro con el mismo ISBN
      */
     @Override
     public Uni<BookResponse> create(BookRequest bookRequest) {
-        // Paso 1: Convertir el DTO a objeto de dominio
+        return validateIsbnNotExists(bookRequest.getIsbn())  // paso 1: Validar el ISBN
+                .map(ignored -> createBookFromRequest(bookRequest))  // paso 2: Creacion entidad
+                .chain(this::saveBook)                     // paso 3 : Persistirlo
+                .map(mapper::toResponse);                   // paso 4 : Convertirlo a respuesta valida
+    }
+
+    /**
+     * Valida que no exista un libro con el ISBN proporcionado.
+     * Flujo:
+     * 1. Busca libro por ISBN
+     * 2. Si encuentra algo (ifNotNull), lanza excepción
+     * 3. Si no encuentra nada, continúa el flujo
+     *
+     * @param isbn ISBN a validar
+     * @return Uni<Void> completado si no existe duplicado
+     * @throws BookDuplicateException si el ISBN ya existe
+     */
+    private Uni<Void> validateIsbnNotExists(String isbn) {
+        return bookRepository.findByIsbn(isbn)
+                .onItem().ifNotNull()
+                .failWith(() -> new BookDuplicateException(isbn))
+                .replaceWithVoid();
+    }
+
+    /**
+     * Crea una nueva entidad Book a partir del DTO de request.
+     * Establece la fecha de creación al momento actual.
+     *
+     * @param bookRequest DTO con los datos del libro
+     * @return Book entidad de dominio creada
+     */
+    private Book createBookFromRequest(BookRequest bookRequest) {
         Book book = mapper.toDomain(bookRequest);
         book.setCreatedAt(Instant.now());
+        return book;
+    }
 
-        // Paso 2: Persistir el libro y transformar la respuesta
-        return bookRepository.save(book)
-                .map(mapper::toResponse);
+    /**
+     * Persiste la entidad Book en el repositorio.
+     *
+     * @param book Entidad a persistir
+     * @return Uni<Book> Libro persistido
+     */
+    private Uni<Book> saveBook(Book book) {
+        return bookRepository.save(book);
     }
 }
