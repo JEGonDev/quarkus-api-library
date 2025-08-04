@@ -1,4 +1,4 @@
-package org.jegdev.library.config;
+package org.jegdev.library.shared.config;
 
 import io.quarkus.mongodb.reactive.ReactiveMongoClient;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;

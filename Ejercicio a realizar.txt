@@ -1,0 +1,50 @@
+🧾 API: Gestión de Pedidos de Libros (Book Orders API)
+Un sistema sencillo para gestionar usuarios, libros, pedidos y entregas.
+
+Módulos
+Usuarios
+
+Registro de usuarios (con validación y verificación de unicidad del email)
+
+Listar todos los usuarios (Multi)
+
+DTOs y validación (Bean Validation)
+
+Libros
+
+Crear libros (título, autor, ISBN único, stock)
+
+Listar libros disponibles
+
+Pedidos
+
+Crear pedido (usuario y lista de libros)
+
+Validar stock disponible (usar tolerancia a fallos si se implementa verificación externa)
+
+Guardar y retornar detalles
+
+Entregas
+
+Marcar pedido como entregado
+
+Ver historial de entregas por usuario
+
+Tecnologías y prácticas que aplicarás
+MongoDB reactivo con Panache
+
+Programación reactiva con Mutiny (Uni, Multi)
+
+DTOs y validaciones (por ejemplo, @Email, @NotBlank)
+
+Documentación con Swagger/OpenAPI
+
+Logging personalizado
+
+Seguridad: proteger ciertos endpoints con JWT (si decides incluirlo)
+
+Manejo de errores y uso de WebApplicationException
+
+Arquitectura hexagonal (puertos y adaptadores bien separados)
+
+CORS habilitado

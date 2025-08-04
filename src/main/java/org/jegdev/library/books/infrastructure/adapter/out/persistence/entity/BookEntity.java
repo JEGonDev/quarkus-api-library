@@ -12,7 +12,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@MongoEntity(collection="books")
+@MongoEntity
 public class BookEntity extends ReactivePanacheMongoEntity {
 
     public String title;
