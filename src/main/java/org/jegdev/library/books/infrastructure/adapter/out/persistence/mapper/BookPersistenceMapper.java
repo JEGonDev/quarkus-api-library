@@ -20,7 +20,7 @@ public class BookPersistenceMapper {
      */
     public Book toDomain(BookEntity entity) {
         if (entity == null) {
-            return null;
+            return null;  // Manejo del caso nulo para evitar NullPointerException
         }
 
         return Book.builder()
