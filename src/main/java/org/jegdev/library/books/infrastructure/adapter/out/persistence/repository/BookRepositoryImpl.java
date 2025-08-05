@@ -10,6 +10,8 @@ import org.jegdev.library.books.domain.port.out.BookRepository;
 import org.jegdev.library.books.infrastructure.adapter.out.persistence.entity.BookEntity;
 import org.jegdev.library.books.infrastructure.adapter.out.persistence.mapper.BookPersistenceMapper;
 
+import static com.mongodb.client.model.Filters.eq;
+
 /**
  * Implementación del puerto de salida BookRepository.
  * Utiliza MongoDB reactivo para las operaciones de persistencia.
@@ -47,5 +49,19 @@ public class BookRepositoryImpl implements BookRepository {
         BookEntity entity = mapper.toEntity(book);
         return bookCollection.insertOne(entity)
                 .map(result -> mapper.toDomain(entity));
+    }
+
+    /**
+     * Busca un libro por su ISBN en la base de datos.
+     * Utiliza programación reactiva con Mutiny para operaciones asíncronas.
+     *
+     * @param isbn ISBN del libro a buscar
+     * @return Uni<Book> libro encontrado convertido a dominio, o Uni null si no se encuentra
+     */
+    @Override
+    public Uni<Book> findByIsbn(String isbn) {
+        return bookCollection.find(eq("isbn", isbn))
+                .toUni()
+                .map(mapper::toDomain);
     }
 }

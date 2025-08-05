@@ -19,6 +19,10 @@ public class BookPersistenceMapper {
      * @return instancia de Book para uso en el dominio
      */
     public Book toDomain(BookEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
         return Book.builder()
                 .id(entity.id != null ? entity.id.toHexString() : null)
                 .title(entity.getTitle())

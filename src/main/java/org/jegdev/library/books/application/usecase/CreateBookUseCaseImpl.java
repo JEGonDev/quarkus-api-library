@@ -34,7 +34,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
      * para mantener el principio de inversión de dependencias.
      */
     @Inject
-    public CreateBookUseCaseImpl(BookRepositoryImpl bookRepository, BookDtoMapper mapper) {
+    public CreateBookUseCaseImpl(BookRepository bookRepository, BookDtoMapper mapper) {
         this.bookRepository = bookRepository;
         this.mapper = mapper;
     }
@@ -55,7 +55,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
     public Uni<BookResponse> create(BookRequest bookRequest) {
         return validateIsbnNotExists(bookRequest.getIsbn())  // paso 1: Validar el ISBN
                 .map(ignored -> createBookFromRequest(bookRequest))  // paso 2: Creacion entidad
-                .chain(this::saveBook)                     // paso 3 : Persistirlo
+                .chain(this::saveBook)                      // paso 3 : Persistirlo
                 .map(mapper::toResponse);                   // paso 4 : Convertirlo a respuesta valida
     }
 
@@ -71,10 +71,10 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
      * @throws BookDuplicateException si el ISBN ya existe
      */
     private Uni<Void> validateIsbnNotExists(String isbn) {
-        return bookRepository.findByIsbn(isbn)
-                .onItem().ifNotNull()
-                .failWith(() -> new BookDuplicateException(isbn))
-                .replaceWithVoid();
+        return bookRepository.findByIsbn(isbn) // paso 1: Buscar por ISBN
+                .onItem().ifNotNull() // paso 2: Si encuentra algo
+                .failWith(() -> new BookDuplicateException(isbn)) // lanza excepción
+                .replaceWithVoid(); // paso 3: Si no encuentra nada, continúa el flujo
     }
 
     /**
@@ -85,9 +85,9 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
      * @return Book entidad de dominio creada
      */
     private Book createBookFromRequest(BookRequest bookRequest) {
-        Book book = mapper.toDomain(bookRequest);
-        book.setCreatedAt(Instant.now());
-        return book;
+        Book book = mapper.toDomain(bookRequest); // Usamos el mapper para convertir el DTO a entidad de dominio
+        book.setCreatedAt(Instant.now()); // Establecemos la fecha de creación
+        return book; // Retornamos la entidad creada
     }
 
     /**
@@ -97,6 +97,6 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
      * @return Uni<Book> Libro persistido
      */
     private Uni<Book> saveBook(Book book) {
-        return bookRepository.save(book);
+        return bookRepository.save(book); // Persistimos usando el puerto de salida
     }
 }
