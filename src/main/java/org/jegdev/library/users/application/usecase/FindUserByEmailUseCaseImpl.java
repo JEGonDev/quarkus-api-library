@@ -4,6 +4,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jegdev.library.users.domain.port.in.FindUserByEmailUseCase;
 import org.jegdev.library.users.domain.port.out.UserRepository;
+import org.jegdev.library.users.errors.exceptions.personalized.UserDuplicateException;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserResponse;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.mapper.UserDtoMapper;
 
@@ -23,10 +24,18 @@ public class FindUserByEmailUseCaseImpl implements FindUserByEmailUseCase {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Método principal que orquesta el flujo para encontrar un usuario por su email.
+     *
+     * @param email Email del usuario a buscar
+     * @return Uni<UserResponse> Respuesta reactiva con el usuario encontrado
+     */
     @Override
     public Uni<UserResponse> findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-
-
+                .onItem().ifNotNull().failWith(() ->
+                        new UserDuplicateException(email)
+                )
+                .map(mapper::toResponse);
     }
 }
