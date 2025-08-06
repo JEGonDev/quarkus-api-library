@@ -5,4 +5,5 @@ import org.jegdev.library.users.domain.model.User;
 
 public interface UserRepository {
     Uni<User> save(User user); // Guarda un nuevo usuario en la base de datos
+    Uni<User> findByEmail(String email); // Busca un usuario por su email
 }
