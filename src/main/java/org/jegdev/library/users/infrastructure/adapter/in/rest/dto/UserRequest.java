@@ -9,7 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(name = "UserRequest", description = "Datos requeridos para la creación de un nuevo usuario")
+@Schema(name = "UserRequest", description = "Datos requeridos para el registro de un nuevo usuario")
 public class UserRequest {
 
     // Identificador del usuario, se genera automaticamente desde MongoDB
