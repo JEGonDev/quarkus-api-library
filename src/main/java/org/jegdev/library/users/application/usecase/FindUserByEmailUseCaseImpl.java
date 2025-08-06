@@ -4,7 +4,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jegdev.library.users.domain.port.in.FindUserByEmailUseCase;
 import org.jegdev.library.users.domain.port.out.UserRepository;
-import org.jegdev.library.users.errors.exceptions.personalized.UserDuplicateException;
+import org.jegdev.library.users.errors.exceptions.personalized.UserEmailNotFoundException;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserResponse;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.mapper.UserDtoMapper;
 
@@ -34,7 +34,7 @@ public class FindUserByEmailUseCaseImpl implements FindUserByEmailUseCase {
     public Uni<UserResponse> findUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .onItem().ifNotNull().failWith(() ->
-                        new UserDuplicateException(email)
+                        new UserEmailNotFoundException(email)
                 )
                 .map(mapper::toResponse);
     }

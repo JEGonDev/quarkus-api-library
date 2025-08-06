@@ -3,11 +3,15 @@ package org.jegdev.library.users.application.usecase;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.jegdev.library.users.domain.model.User;
 import org.jegdev.library.users.domain.port.in.RegisterUserUseCase;
 import org.jegdev.library.users.domain.port.out.UserRepository;
+import org.jegdev.library.users.errors.exceptions.personalized.UserDuplicateException;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserRequest;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserResponse;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.mapper.UserDtoMapper;
+
+import java.time.Instant;
 
 /**
  * Implementación del caso de uso para registrar usuarios.
@@ -33,8 +37,43 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
         this.mapper = mapper;
     }
 
+    /**
+     * Método principal que orquesta el flujo de registro de un usuario.
+     * El flujo sigue estos pasos:
+     * 1. Valida que no exista un usuario con el mismo email
+     * 2. Crea una entidad de dominio User a partir del DTO
+     * 3. Persiste el usuario en la base de datos
+     * 4. Convierte y retorna la respuesta
+     *
+     * @param userRequest DTO con los datos del usuario a registrar (ya validado por Bean Validation)
+     * @return Uni<UserResponse> Respuesta reactiva con el usuario registrado
+     * @throws UserDuplicateException si ya existe un usuario con el mismo email
+     */
     @Override
     public Uni<UserResponse> register(UserRequest userRequest) {
-        return null;
+        return validateEmailNotExists(userRequest.getEmail()) // paso 1: Validar el email
+                .map(ignored -> createUserFromRequest(userRequest)) // paso 2: Crear entidad de dominio
+                .chain(this::saveUser) // paso 3: Persistir el usuario
+                .map(mapper::toResponse); // paso 4: Convertir a respuesta DTO
+    }
+
+    // Validar que no exista un usuario con el mismo email
+    private Uni<Void> validateEmailNotExists(String email) {
+        return userRepository.findByEmail(email) // Verificar si el email ya existe
+                .onItem().ifNotNull()  // Si se encuentra un usuario con ese email
+                .failWith(() -> new UserDuplicateException(email)) // lanzar excepción personalizada
+                .replaceWithVoid(); // Si no existe, continuar sin valor
+    }
+
+    // Crear una entidad de dominio User a partir del DTO UserRequest
+    private User createUserFromRequest(UserRequest userRequest) {
+        User user = mapper.toDomain(userRequest); // Convertir DTO a entidad de dominio
+        user.setCreatedAt(Instant.now()); // Establecer la fecha de creación
+        return user;
+    }
+
+    // Persistir el usuario en la base de datos
+    private Uni<User> saveUser(User user) {
+        return userRepository.save(user); // Persistir el usuario y retornar la entidad guardada
     }
 }
