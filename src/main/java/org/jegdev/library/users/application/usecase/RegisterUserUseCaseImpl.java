@@ -13,6 +13,7 @@ import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserResponse;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.mapper.UserDtoMapper;
 
 import java.time.Instant;
+import java.util.List;
 
 /**
  * Implementación del caso de uso para registrar usuarios.
@@ -72,6 +73,7 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
     private User createUserFromRequest(UserRequest userRequest) {
         User user = mapper.toDomain(userRequest); // Convertir DTO a entidad de dominio
         user.setCreatedAt(Instant.now()); // Establecer la fecha de creación
+        user.setRoles(List.of("USER")); // Asignar el rol por defecto
 
         String hashedPassword = passwordHasher.hash(userRequest.getPassword()); // Hashear la contraseña antes de guardar
         user.setPassword(hashedPassword); // Establecer la contraseña hasheada

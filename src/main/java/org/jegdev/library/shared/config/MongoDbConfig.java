@@ -7,9 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jegdev.library.books.infrastructure.adapter.out.persistence.entity.BookEntity;
-//import org.jegdev.library.users.infrastructure.adapter.out.persistence.entity.UserEntity;
-//import org.jegdev.library.orders.infrastructure.adapter.out.persistence.entity.OrderEntity;
-//import org.jegdev.library.deliverys.infrastructure.adapter.out.persistence.entity.DeliveryEntity;
+import org.jegdev.library.users.infrastructure.adapter.out.persistence.entity.UserEntity;
 
 /**
  * Configuración centralizada para MongoDB.
@@ -78,11 +76,11 @@ public class MongoDbConfig {
      * @param database Base de datos reactiva inyectada
      * @return Colección reactiva para Users
      */
-//    @Produces // Indica que este método es un productor de beans, es decir, crea y proporciona instancias de ReactiveMongoDatabase que pueden ser inyectadas en otras partes de la aplicación.
-//    @ApplicationScoped
-//    public ReactiveMongoCollection<UserEntity> userCollection(ReactiveMongoDatabase database) {
-//        return database.getCollection(usersCollection, UserEntity.class);
-//    }
+    @Produces // Indica que este método es un productor de beans, es decir, crea y proporciona instancias de ReactiveMongoDatabase que pueden ser inyectadas en otras partes de la aplicación.
+    @ApplicationScoped
+    public ReactiveMongoCollection<UserEntity> userCollection(ReactiveMongoDatabase database) {
+        return database.getCollection(usersCollection, UserEntity.class);
+    }
 
     /**
      * Produce la colección reactiva para Orders.
