@@ -73,7 +73,7 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
     private User createUserFromRequest(UserRequest userRequest) {
         User user = mapper.toDomain(userRequest); // Convertir DTO a entidad de dominio
         user.setCreatedAt(Instant.now()); // Establecer la fecha de creación
-        user.setRoles(List.of("USER")); // Asignar el rol por defecto
+        user.setRoles(List.of("USER")); // Asignar el rol por defecto "USER"
 
         String hashedPassword = passwordHasher.hash(userRequest.getPassword()); // Hashear la contraseña antes de guardar
         user.setPassword(hashedPassword); // Establecer la contraseña hasheada
