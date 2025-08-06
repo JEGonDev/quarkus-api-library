@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jegdev.library.users.domain.model.User;
 import org.jegdev.library.users.domain.port.in.RegisterUserUseCase;
+import org.jegdev.library.users.domain.port.out.PasswordHasher;
 import org.jegdev.library.users.domain.port.out.UserRepository;
 import org.jegdev.library.users.errors.exceptions.personalized.UserDuplicateException;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserRequest;
@@ -25,6 +26,7 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
 
     private final UserRepository userRepository; // Puerto de salida para persistencia de usuarios
     private final UserDtoMapper mapper; // Mapper para convertir entre DTO y dominio
+    private final PasswordHasher passwordHasher; // Puerto de salida para hashear contraseñas
 
     /**
      * Constructor con inyección de dependencias.
@@ -32,9 +34,10 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
      * para mantener el principio de inversión de dependencias.
      */
     @Inject
-    public RegisterUserUseCaseImpl(UserRepository userRepository, UserDtoMapper mapper) {
+    public RegisterUserUseCaseImpl(UserRepository userRepository, UserDtoMapper mapper, PasswordHasher passwordHasher) {
         this.userRepository = userRepository;
         this.mapper = mapper;
+        this.passwordHasher = passwordHasher;
     }
 
     /**
@@ -69,6 +72,10 @@ public class RegisterUserUseCaseImpl implements RegisterUserUseCase {
     private User createUserFromRequest(UserRequest userRequest) {
         User user = mapper.toDomain(userRequest); // Convertir DTO a entidad de dominio
         user.setCreatedAt(Instant.now()); // Establecer la fecha de creación
+
+        String hashedPassword = passwordHasher.hash(userRequest.getPassword()); // Hashear la contraseña antes de guardar
+        user.setPassword(hashedPassword); // Establecer la contraseña hasheada
+
         return user;
     }
 
