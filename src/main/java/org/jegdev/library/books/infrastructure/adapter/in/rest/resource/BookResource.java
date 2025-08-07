@@ -1,6 +1,7 @@
 package org.jegdev.library.books.infrastructure.adapter.in.rest.resource;
 
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -21,8 +22,6 @@ import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookResponse;
  * Implementa el adaptador primario (puerto de entrada) en la arquitectura hexagonal.
  */
 @Path("/books")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Books", description = "Operaciones relacionadas con libros")
 public class BookResource {
 
@@ -43,6 +42,9 @@ public class BookResource {
      */
     @POST
     @Operation(summary = "Crear un nuevo libro", description = "Crea un nuevo libro en el sistema")
+    @RolesAllowed("ADMIN") // Solo usuarios con rol ADMIN pueden crear libros
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @APIResponse(
             responseCode = "201",
             description = "Libro creado exitosamente",
@@ -68,6 +70,8 @@ public class BookResource {
      */
     @GET
     @Path("/isbn/{isbn}")
+    @RolesAllowed("ADMIN") // Solo usuarios con rol ADMIN pueden crear libros
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Buscar libro por ISBN", description = "Busca un libro en el sistema por su ISBN")
     @APIResponse(
             responseCode = "200",

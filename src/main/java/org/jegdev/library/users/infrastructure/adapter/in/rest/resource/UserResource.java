@@ -1,6 +1,8 @@
 package org.jegdev.library.users.infrastructure.adapter.in.rest.resource;
 
 import io.smallrye.mutiny.Uni;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -20,8 +22,6 @@ import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserRequest;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserResponse;
 
 @Path("/users")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 @Tag(name = "Users", description = "Operaciones relacionadas con usuarios")
 public class UserResource {
 
@@ -44,6 +44,9 @@ public class UserResource {
      */
     @POST
     @Path("/register")
+    @PermitAll
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Registrar un nuevo usuario", description = "Registra un nuevo usuario en el sistema")
     @APIResponse(
             responseCode = "201",
@@ -70,6 +73,9 @@ public class UserResource {
      */
     @POST
     @Path("/login")
+    @PermitAll
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Login de usuario", description = "Autentica al usuario y retorna un JWT")
     @APIResponse(
             responseCode = "200",
@@ -94,6 +100,8 @@ public class UserResource {
      */
     @POST
     @Path("/findByEmail/{email}")
+    @RolesAllowed("ADMIN") // Solo los administradores pueden buscar usuarios por email
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Buscar usuario por email", description = "Busca un usuario por su email")
     @APIResponse(
             responseCode = "200",
