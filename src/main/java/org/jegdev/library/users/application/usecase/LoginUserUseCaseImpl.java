@@ -11,6 +11,7 @@ import org.jegdev.library.users.errors.exceptions.personalized.UserEmailNotFound
 import org.jegdev.library.users.errors.exceptions.personalized.IncorrectPasswordException;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.LoginRequest;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.LoginResponse;
+import org.jegdev.library.users.infrastructure.security.JwtTokenProvider;
 
 /**
  * Implementación del caso de uso para iniciar sesión de un usuario.
@@ -22,6 +23,7 @@ public class LoginUserUseCaseImpl implements LoginUserUseCase {
 
     private final UserRepository userRepository; // Puerto de salida para persistencia de usuarios
     private final PasswordHasher passwordHasher; // Puerto de salida para hashear contraseñas
+    private final JwtTokenProvider jwtTokenProvider; // Proveedor de tokens JWT
 
     /**
      * Constructor con inyección de dependencias.
@@ -29,9 +31,10 @@ public class LoginUserUseCaseImpl implements LoginUserUseCase {
      * para mantener el principio de inversión de dependencias.
      */
     @Inject
-    public LoginUserUseCaseImpl(UserRepository userRepository, PasswordHasher passwordHasher) {
+    public LoginUserUseCaseImpl(UserRepository userRepository, PasswordHasher passwordHasher, JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     /**
@@ -90,6 +93,7 @@ public class LoginUserUseCaseImpl implements LoginUserUseCase {
      * @return LoginResponse Respuesta de inicio de sesión
      */
     private LoginResponse generateLoginResponse(User user) {
-        return new LoginResponse("OK");
+        String token = jwtTokenProvider.generateToken(user); // Genera el token JWT para el usuario
+        return new LoginResponse(token); // Retorna la respuesta con estado y token
     }
 }

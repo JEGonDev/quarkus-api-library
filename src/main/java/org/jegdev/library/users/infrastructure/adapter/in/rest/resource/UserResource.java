@@ -12,7 +12,10 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jegdev.library.users.domain.port.in.FindUserByEmailUseCase;
+import org.jegdev.library.users.domain.port.in.LoginUserUseCase;
 import org.jegdev.library.users.domain.port.in.RegisterUserUseCase;
+import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.LoginRequest;
+import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.LoginResponse;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserRequest;
 import org.jegdev.library.users.infrastructure.adapter.in.rest.dto.UserResponse;
 
@@ -24,11 +27,13 @@ public class UserResource {
 
     private final RegisterUserUseCase registerUserUseCase; // Puerto de entrada para el registro de usuarios
     private final FindUserByEmailUseCase findUserByEmailUseCase; // Puerto de entrada para la búsqueda de usuarios por email
+    private final LoginUserUseCase loginUserUseCase; // Puerto de entrada para el inicio de sesión de usuarios
 
     @Inject
-    public UserResource(RegisterUserUseCase registerUserUseCase, FindUserByEmailUseCase findUserByEmailUseCase) {
+    public UserResource(RegisterUserUseCase registerUserUseCase, FindUserByEmailUseCase findUserByEmailUseCase, LoginUserUseCase loginUserUseCase) {
         this.registerUserUseCase = registerUserUseCase;
         this.findUserByEmailUseCase = findUserByEmailUseCase;
+        this.loginUserUseCase = loginUserUseCase;
     }
 
     /**
@@ -55,6 +60,30 @@ public class UserResource {
                 .map(userResponse -> Response.status(Response.Status.CREATED)
                         .entity(userResponse)
                         .build());
+    }
+
+    /**
+     * Inicia sesión de un usuario y devuelve un JWT.
+     *
+     * @param loginRequest DTO con email y contraseña
+     * @return JWT si las credenciales son válidas
+     */
+    @POST
+    @Path("/login")
+    @Operation(summary = "Login de usuario", description = "Autentica al usuario y retorna un JWT")
+    @APIResponse(
+            responseCode = "200",
+            description = "Login exitoso",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = LoginResponse.class))
+    )
+    @APIResponse(
+            responseCode = "401",
+            description = "Credenciales inválidas"
+    )
+    public Uni<Response> login(@Valid LoginRequest loginRequest) {
+        return loginUserUseCase.login(loginRequest)
+                .map(response -> Response.ok(response).build());
     }
 
     /**
