@@ -33,7 +33,7 @@ public class FindUserByEmailUseCaseImpl implements FindUserByEmailUseCase {
     @Override
     public Uni<UserResponse> findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .onItem().ifNotNull().failWith(() ->
+                .onItem().ifNull().failWith(() ->
                         new UserEmailNotFoundException(email)
                 )
                 .map(mapper::toResponse);
