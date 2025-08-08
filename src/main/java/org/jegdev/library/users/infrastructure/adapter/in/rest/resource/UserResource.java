@@ -98,8 +98,8 @@ public class UserResource {
      * @param email Email del usuario a buscar
      * @return Respuesta HTTP con el usuario encontrado o un error si no existe
      */
-    @POST
-    @Path("/findByEmail/{email}")
+    @GET
+    @Path("/getUser/{email}")
     @RolesAllowed("ADMIN") // Solo los administradores pueden buscar usuarios por email
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Buscar usuario por email", description = "Busca un usuario por su email")
