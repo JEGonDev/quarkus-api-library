@@ -10,7 +10,6 @@ import org.jegdev.library.books.errors.exceptions.personalized.BookDuplicateExce
 import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookRequest;
 import org.jegdev.library.books.infrastructure.adapter.in.rest.dto.BookResponse;
 import org.jegdev.library.books.infrastructure.adapter.in.rest.mapper.BookDtoMapper;
-import org.jegdev.library.books.infrastructure.adapter.out.persistence.repository.BookRepositoryImpl;
 
 import java.time.Instant;
 
